@@ -3,160 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gavin Liu Web Sys Personal Website!</title>
+    <title>Gavin Liu - Personal Portfolio</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#education">Education</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#skills">Skills</a></li>
+        </ul>
+    </nav>
+
     <!-- Header Section -->
     <header>
-        <h1>Gavin Liu</h1>
-        <div class="contact-info"></div>
-            <p>2150 12th Street, Troy, NY 12180</p>
-            <p>Phone: (626)-365-3783</p>
-            <p>Email: <a href="mailto:liug8@rpi.edu">liug8@rpi.edu</a></p>
+        <div class="header-content">
+            <div class="profile-info">
+                <h1>Gavin Liu</h1>
+                <div class="contact-info">
+                    <p>2150 12th Street, Troy, NY 12180</p>
+                    <p>Phone: (626)-365-3783</p>
+                    <p>Email: <a href="mailto:liug8@rpi.edu">liug8@rpi.edu</a></p>
+                </div>
+            </div>
+            <img src="hero.jpg" alt="Profile Photo" class="profile-photo">
         </div>
-        <img src="hero.jpg" alt="Profile Photo" class="profile-photo">
     </header>
 
-    <!-- Objective Section -->
-    <section class="objective">
+    <main>
+
+        <!-- About Section -->
+        <section id="about" class="card">
+            <h2>About Me</h2>
+            <p>
+                Hi I'm Gavin Liu! I'm a junior in the class of 2026 majoring in Computer Science 
+                at Rensselaer Polytechnic Institute. When I'm not LeetCoding, you can catch me 
+                playing volleyball, eating ramen, or hanging out with friends across campus. 
+                I love learning more about computer science and am always looking for new 
+                opportunities to grow my skills.
+            </p>
+        </section>
+
+        <!-- Education Section -->
+        <section id="education" class="card">
+            <h2>Education</h2>
+            
+            <div class="education-item">
+                <h3>
+                    <a href="https://www.rpi.edu" target="_blank" rel="noopener">
+                        Rensselaer Polytechnic Institute
+                    </a>
+                </h3>
+                <p class="degree"><strong>Bachelor of Science in Computer Science, minor in Information Technology and Web Science</strong></p>
+                <p class="date">2022 - 2026</p>
+                <ul>
+                    <li>Senior, Class of 2026</li>
+                    <li>Dean's Honor List 2024, Recipient of Rensselaer Leadership Award</li>
+                </ul>
+            </div>
+            
+            <div class="education-item">
+                <h3>
+                    <a href="https://sites.google.com/avusd.org/apple/home" target="_blank" rel="noopener">
+                        Apple Valley High School
+                    </a>
+                </h3>
+                <p class="degree"><strong>High School Diploma</strong></p>
+                <p class="date">2021 - 2022</p>
+                <ul>
+                    <li>Graduated with a 4.0 GPA</li>
+                    <li>CTE Outstanding Student of the Year in Computer Programming</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Work Experience Section -->
+        <section id="experience" class="card">
+            <h2>Work Experience</h2>
+            
+            <div class="work-item">
+                <h3>
+                    <a href="https://askroi.com/" target="_blank" rel="noopener">askROI</a>
+                </h3>
+                <p class="position"><strong>Technical Intern</strong></p>
+                <p class="date">May 2025 - Present</p>
+                <ul>
+                    <li>
+                        Built HuggingFace MCP OAuth integration for voice agents, implementing 
+                        secure authentication protocols that reduced integration setup time by 75% 
+                        and enabled seamless access to 15+ protected services
+                    </li>
+                    <li>
+                        Developed comprehensive campaign management system with 8 CRUD API endpoints 
+                        and real-time status controls, supporting 10,000+ concurrent campaigns and 
+                        reducing manual oversight by 60%
+                    </li>
+                    <li>
+                        Designed responsive UI components including campaign creation workflows and 
+                        CSV upload functionality, processing up to 50,000 contacts per upload and 
+                        improving user workflow efficiency by 40%
+                    </li>
+                </ul>
+            </div>
+
+            <div class="work-item">
+                <h3>
+                    <a href="https://isaachealthcare.com/" target="_blank" rel="noopener">
+                        IsaacGroup Healthcare
+                    </a>
+                </h3>
+                <p class="position"><strong>Frontend Developer Intern</strong></p>
+                <p class="date">June 2024 - August 2024</p>
+                <ul>
+                    <li>
+                        Redesigned and optimized the company's landing page and key website sections 
+                        using TailwindCSS and HTML, improving load times by 30% and enhancing user 
+                        experience, leading to a 20% increase in visitor retention
+                    </li>
+                    <li>
+                        Engineered a responsive frontend interface using React for a MongoDB database 
+                        of healthcare, decreasing physician query response time by 25%
+                    </li>
+                    <li>
+                        Partnered with a cross-functional team to implement UI/UX improvements, 
+                        resulting in a 15% boost in overall user engagement
+                    </li>
+                </ul>
+            </div>
+
+            <div class="work-item">
+                <h3>
+                    <a href="https://www.rabbitair.com/" target="_blank" rel="noopener">
+                        Rabbit Air
+                    </a>
+                </h3>
+                <p class="position"><strong>Software Engineering Intern</strong></p>
+                <p class="date">May 2023 - July 2023</p>
+                <ul>
+                    <li>
+                        Developed a Python data scraper using a custom Shopify API to collect and 
+                        store data for over 250 customers in a CSV file, increasing accessibility 
+                        for subscription notifications and product trend analysis
+                    </li>
+                    <li>
+                        Leveraged a Shopify backend for various tasks such as blog page updates, 
+                        product additions, and customer data management, helping increase online 
+                        presence by 10%
+                    </li>
+                    <li>
+                        Administered product data and ensured accurate marketing through continuous 
+                        updates on a Google Merchant Excel sheet, increasing visibility and reach 
+                        via Google Ads and Google Marketplace by 20%
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="card">
+            <h2>Skills</h2>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h3>Programming Languages</h3>
+                    <p>Python, Java, JavaScript, C, C++, HTML, CSS</p>
+                </div>
+                <div class="skill-category">
+                    <h3>Frameworks & Libraries</h3>
+                    <p>React, Node.js, TailwindCSS</p>
+                </div>
+                <div class="skill-category">
+                    <h3>Databases</h3>
+                    <p>MongoDB, MySQL</p>
+                </div>
+                <div class="skill-category">
+                    <h3>Tools & Platforms</h3>
+                    <p>Git, GitHub, Docker, AWS, Heroku</p>
+                </div>
+                <div class="skill-category">
+                    <h3>Other Skills</h3>
+                    <p>Agile Methodologies, UI/UX Design</p>
+                </div>
+                <div class="skill-category">
+                    <h3>Languages</h3>
+                    <p>English (Fluent), Mandarin (Conversational)</p>
+                </div>
+                <div class="skill-category">
+                    <h3>Certifications</h3>
+                    <p>Github Foundations Certification</p>
+                </div>
+                <div class="skill-category">
+                    <h3>Soft Skills</h3>
+                    <p>Team Collaboration, Problem-Solving, Communication</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Gavin Liu. All rights reserved.</p>
         <p>
-            Hi I'm Gavin Liu! I'm a junior in the class of 2026 majoring in Computer Science 
-            at Rensselaer Polytechnic Institute. When I'm not LeetCoding, you can catch me 
-            playing volleyball, eating ramen, or hanging out with friends across campus. 
-            I love learning more about computer science and am always looking for new 
-            opportunities to grow my skills.
+            <a href="mailto:liug8@rpi.edu">Contact Me</a> | 
+            <a href="https://github.com/liug88" target="_blank" rel="noopener">GitHub</a>
         </p>
-    </section>
+    </footer>
 
-    <!-- Education Section -->
-    <section class="education">
-        <h2>Education</h2>
-        
-        <div class="education-item">
-            <h3>
-                <a href="https://www.rpi.edu" target="_blank" rel="noopener">
-                    Rensselaer Polytechnic Institute
-                </a>
-            </h3>
-            <p><strong>Bachelor of Science in Computer Science, minor in Information Technology and Web Science</strong></p>
-            <p>2022 - 2026</p>
-            <ul>
-                <li>Senior, Class of 2026</li>
-                <li>Dean's Honor List 2024, Recipient of Rensselaer Leadership Award</li>
-            </ul>
-        </div>
-        
-        <div class="education-item">
-            <h3>
-                <a href="https://sites.google.com/avusd.org/apple/home" target="_blank" rel="noopener">
-                    Apple Valley High School
-                </a>
-            </h3>
-            <p><strong>High School Diploma</strong></p>
-            <p>2021 - 2022</p>
-            <ul>
-                <li>Graduated with a 4.0 GPA</li>
-                <li>CTE Outstanding Student of the Year in Computer Programming</li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- Work Experience Section -->
-    <section class="work-experience">
-        <h2>Work Experience</h2>
-        
-        <div class="work-item">
-            <h3>
-                <a href="https://askroi.com/" target="_blank" rel="noopener">askROI</a>
-            </h3>
-            <p><strong>Technical Intern</strong></p>
-            <p>May 2025 - Present</p>
-            <ul>
-                <li>
-                    Built HuggingFace MCP OAuth integration for voice agents, implementing 
-                    secure authentication protocols that reduced integration setup time by 75% 
-                    and enabled seamless access to 15+ protected services
-                </li>
-                <li>
-                    Developed comprehensive campaign management system with 8 CRUD API endpoints 
-                    and real-time status controls, supporting 10,000+ concurrent campaigns and 
-                    reducing manual oversight by 60%
-                </li>
-                <li>
-                    Designed responsive UI components including campaign creation workflows and 
-                    CSV upload functionality, processing up to 50,000 contacts per upload and 
-                    improving user workflow efficiency by 40%
-                </li>
-            </ul>
-        </div>
-
-        <div class="work-item">
-            <h3>
-                <a href="https://isaachealthcare.com/" target="_blank" rel="noopener">
-                    IsaacGroup Healthcare
-                </a>
-            </h3>
-            <p><strong>Frontend Developer Intern</strong></p>
-            <p>June 2024 - August 2024</p>
-            <ul>
-                <li>
-                    Redesigned and optimized the company's landing page and key website sections 
-                    using TailwindCSS and HTML, improving load times by 30% and enhancing user 
-                    experience, leading to a 20% increase in visitor retention
-                </li>
-                <li>
-                    Engineered a responsive frontend interface using React for a MongoDB database 
-                    of healthcare, decreasing physician query response time by 25%
-                </li>
-                <li>
-                    Partnered with a cross-functional team to implement UI/UX improvements, 
-                    resulting in a 15% boost in overall user engagement
-                </li>
-            </ul>
-        </div>
-
-        <div class="work-item">
-            <h3>
-                <a href="https://www.rabbitair.com/" target="_blank" rel="noopener">
-                    Rabbit Air
-                </a>
-            </h3>
-            <p><strong>Software Engineering Intern</strong></p>
-            <p>May 2023 - July 2023</p>
-            <ul>
-                <li>
-                    Developed a Python data scraper using a custom Shopify API to collect and 
-                    store data for over 250 customers in a CSV file, increasing accessibility 
-                    for subscription notifications and product trend analysis
-                </li>
-                <li>
-                    Leveraged a Shopify backend for various tasks such as blog page updates, 
-                    product additions, and customer data management, helping increase online 
-                    presence by 10%
-                </li>
-                <li>
-                    Administered product data and ensured accurate marketing through continuous 
-                    updates on a Google Merchant Excel sheet, increasing visibility and reach 
-                    via Google Ads and Google Marketplace by 20%
-                </li>
-            </ul>
-        </div>
-    </section>
-    <!-- Skills Section -->
-    <section class="skills">
-        <h2>Skills</h2>
-        <ul>
-            <li>Programming Languages: Python, Java, JavaScript, C, C++, HTML, CSS</li>
-            <li>Frameworks & Libraries: React, Node.js, TailwindCSS</li>
-            <li>Databases: MongoDB, MySQL</li>
-            <li>Tools & Platforms: Git, GitHub, Docker, AWS, Heroku</li>
-            <li>Other Skills: Agile Methodologies, UI/UX Design</li>
-            <li>Languages: English (Fluent), Mandarin (Conversational)</li>
-            <li>Soft Skills: Team Collaboration, Problem-Solving, Communication</li>
-            <li>Github Foundations Certification</li>
-        </ul>
-
+    <script src="script.js"></script>
 </body>
 </html>

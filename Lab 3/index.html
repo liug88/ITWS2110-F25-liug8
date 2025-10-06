@@ -26,6 +26,18 @@
             text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
             font-weight: bold;
         }
+        #locationName {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #5A4A7A;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #locationName::before {
+            content: "📍";
+            font-size: 1.5rem;
+        }
         .weather-card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
@@ -87,6 +99,7 @@
             <!-- Weather Section -->
             <div class="weather-card">
                 <h2>Current Weather</h2>
+                <h3 id="locationName" class="text-primary mb-3"></h3>
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="weather-icon" id="weatherIcon"></div>
@@ -115,7 +128,7 @@
 
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script>
-        const WEATHER_API_KEY = 'c07371c77c27c37589415ab178c72cbe'; // Replace with your API key
+        const WEATHER_API_KEY = 'c07371c77c27c37589415ab178c72cbe';
         const TROY_COORDS = { lat: 42.7284, lon: -73.6918 }; // Fallback coordinates
 
         let userLocation = null; // Will store user's location if available
@@ -164,7 +177,7 @@
             const coords = userLocation || TROY_COORDS;
             const url = `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.lon}&appid=${WEATHER_API_KEY}&units=imperial`;
             
-            // Option 1: Modern Fetch API (what you currently have)
+            // Fetch weather data
             const response = await fetch(url);
             
             if (!response.ok) {
@@ -194,10 +207,10 @@
             }
             
             const data = await response.json();
-            // Get 6 random Pokémon of this type
+            // Get 5 random Pokémon of this type
             const pokemon = data.pokemon;
             const shuffled = pokemon.sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, 6);
+            return shuffled.slice(0, 5);
         }
             
         async function fetchPokemonDetails(url) {
@@ -236,11 +249,11 @@
             // Display metadata from headers AND JSON response
             let metadataHTML = '<strong>API Metadata:</strong> ';
 
-            // Try to get headers (may be blocked by CORS)
+            // Try to get headers
             const contentType = headers.get('content-type');
             const cacheControl = headers.get('cache-control');
 
-            // Get metadata from JSON response (always available)
+            // Get metadata from JSON response
             const dataTimestamp = new Date(dt * 1000).toLocaleString();
             const sunrise = new Date(sys.sunrise * 1000).toLocaleTimeString();
             const sunset = new Date(sys.sunset * 1000).toLocaleTimeString();
@@ -306,6 +319,27 @@
             }
         }
 
+        // Reverse geocode to get state/region from coordinates
+        async function getLocationDetails(lat, lon) {
+            try {
+                const url = `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${WEATHER_API_KEY}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data && data.length > 0) {
+                    return {
+                        city: data[0].name,
+                        state: data[0].state || '',
+                        country: data[0].country
+                    };
+                }
+                return null;
+            } catch (error) {
+                console.error('Error getting location details:', error);
+                return null;
+            }
+        }
+
         async function init() {
             try {
                 // Step 1: Get user's location using HTML5 Geolocation API
@@ -314,9 +348,23 @@
                 // Step 2: Fetch weather data for that location
                 const { data: weatherData, headers } = await fetchWeather();
 
-                // Step 3: Update title to show location name
-                const locationName = weatherData.name || 'Your Location';
-                $('h1').text(`${locationName} Weather Dashboard`);
+                // Step 3: Get detailed location info (city, state, country)
+                const locationDetails = await getLocationDetails(userLocation.lat, userLocation.lon);
+
+                let locationText = '';
+                if (locationDetails) {
+                    locationText = locationDetails.city;
+                    if (locationDetails.state) {
+                        locationText += `, ${locationDetails.state}`;
+                    }
+                    
+                } else {
+                    locationText = weatherData.name || 'Your Location';
+                }
+
+                // Update both the main title and the location display
+                $('h1').text('Weather Dashboard');
+                $('#locationName').text(locationText);
 
                 // Step 4: Display weather and Pokemon
                 displayWeather(weatherData, headers);

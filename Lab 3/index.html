@@ -7,9 +7,24 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background:
+                /* Cute scattered pixel clouds */
+                radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.3) 2%, transparent 2%),
+                radial-gradient(circle at 60% 20%, rgba(255, 255, 255, 0.25) 1.5%, transparent 1.5%),
+                radial-gradient(circle at 80% 60%, rgba(255, 255, 255, 0.2) 2.5%, transparent 2.5%),
+                radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.3) 1.8%, transparent 1.8%),
+                radial-gradient(circle at 15% 80%, rgba(255, 255, 255, 0.25) 2.2%, transparent 2.2%),
+                radial-gradient(circle at 90% 40%, rgba(255, 255, 255, 0.2) 1.5%, transparent 1.5%),
+                /* Soft pastel gradient background */
+                linear-gradient(135deg, #87CEEB 0%, #98D8E8 25%, #FFB6D9 50%, #D4A5D4 75%, #B8B8FF 100%);
             min-height: 100vh;
             padding: 20px;
+        }
+
+        h1 {
+            color: #5A4A7A !important;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+            font-weight: bold;
         }
         .weather-card {
             background: rgba(255, 255, 255, 0.95);
@@ -101,7 +116,9 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script>
         const WEATHER_API_KEY = 'c07371c77c27c37589415ab178c72cbe'; // Replace with your API key
-        const TROY_COORDS = { lat: 42.7284, lon: -73.6918 };
+        const TROY_COORDS = { lat: 42.7284, lon: -73.6918 }; // Fallback coordinates
+
+        let userLocation = null; // Will store user's location if available
 
         // Weather to Pokémon type mapping
         const weatherToPokemonType = {
@@ -116,8 +133,36 @@
             'Haze': 'poison'
         };
 
+        // HTML5 Geolocation API - Get user's location
+        function getUserLocation() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    console.log('Geolocation not supported, using Troy, NY');
+                    resolve(TROY_COORDS);
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const coords = {
+                            lat: position.coords.latitude,
+                            lon: position.coords.longitude
+                        };
+                        console.log('User location obtained:', coords);
+                        resolve(coords);
+                    },
+                    (error) => {
+                        console.log('Geolocation error, using Troy, NY as fallback:', error.message);
+                        resolve(TROY_COORDS); // Fallback to Troy, NY
+                    }
+                );
+            });
+        }
+
         async function fetchWeather() {
-            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${TROY_COORDS.lat}&lon=${TROY_COORDS.lon}&appid=${WEATHER_API_KEY}&units=imperial`;
+            // Use user's location if available, otherwise use Troy, NY
+            const coords = userLocation || TROY_COORDS;
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.lon}&appid=${WEATHER_API_KEY}&units=imperial`;
             
             // Option 1: Modern Fetch API (what you currently have)
             const response = await fetch(url);
@@ -186,8 +231,8 @@
         }
 
         function displayWeather(weatherData, headers) {
-            const { main, weather, wind, visibility } = weatherData;
-            
+            const { main, weather, wind, visibility, dt, sys } = weatherData;
+
             $('#temperature').text(`${Math.round(main.temp)}°F`);
             $('#description').text(weather[0].description);
             $('#feelsLike').text(`${Math.round(main.feels_like)}°F`);
@@ -195,7 +240,7 @@
             $('#windSpeed').text(`${wind?.speed || 0} mph`);
             $('#pressure').text(`${main.pressure} hPa`);
             $('#visibility').text(`${((visibility || 0) / 1609.34).toFixed(1)} miles`);
-            
+
             // Weather icon
             const iconMap = {
                 'Clear': '☀️',
@@ -208,18 +253,51 @@
                 'Fog': '🌫️'
             };
             $('#weatherIcon').text(iconMap[weather[0].main] || '🌈');
-            
-            // Display metadata from headers
+
+            // Display metadata from headers AND JSON response
             let metadataHTML = '<strong>API Metadata:</strong> ';
-            metadataHTML += `Server: ${headers.get('server') || 'N/A'} | `;
-            metadataHTML += `Date: ${headers.get('date') || 'N/A'}`;
+
+            // Try to get headers (may be blocked by CORS)
+            const contentType = headers.get('content-type');
+            const cacheControl = headers.get('cache-control');
+
+            // Get metadata from JSON response (always available)
+            const dataTimestamp = new Date(dt * 1000).toLocaleString();
+            const sunrise = new Date(sys.sunrise * 1000).toLocaleTimeString();
+            const sunset = new Date(sys.sunset * 1000).toLocaleTimeString();
+
+            if (contentType) {
+                metadataHTML += `Content-Type: ${contentType} | `;
+            }
+            metadataHTML += `Data Timestamp: ${dataTimestamp} | `;
+            metadataHTML += `Sunrise: ${sunrise} | Sunset: ${sunset}`;
+
+            if (cacheControl) {
+                metadataHTML += ` | Cache: ${cacheControl}`;
+            }
+
             $('#metadata').html(metadataHTML);
         }
         
         async function displayPokemon(weatherCondition) {
             const pokemonType = weatherToPokemonType[weatherCondition] || 'normal';
-            
-            $('#pokemonTitle').text(`${weatherCondition} Weather Pokémon`);
+
+            // Convert weather condition to friendly format
+            const weatherDescriptions = {
+                'Clear': 'Sunny',
+                'Clouds': 'Cloudy',
+                'Rain': 'Rainy',
+                'Drizzle': 'Drizzly',
+                'Thunderstorm': 'Stormy',
+                'Snow': 'Snowy',
+                'Mist': 'Misty',
+                'Fog': 'Foggy',
+                'Haze': 'Hazy'
+            };
+
+            const friendlyWeather = weatherDescriptions[weatherCondition] || weatherCondition;
+
+            $('#pokemonTitle').text(`${friendlyWeather} Weather Pokémon`);
             $('#pokemonSubtitle').text(`Here are some ${pokemonType}-type Pokémon that match today's weather!`);
             
             try {
@@ -251,10 +329,20 @@
 
         async function init() {
             try {
+                // Step 1: Get user's location using HTML5 Geolocation API
+                userLocation = await getUserLocation();
+
+                // Step 2: Fetch weather data for that location
                 const { data: weatherData, headers } = await fetchWeather();
+
+                // Step 3: Update title to show location name
+                const locationName = weatherData.name || 'Your Location';
+                $('h1').text(`${locationName} Weather Dashboard`);
+
+                // Step 4: Display weather and Pokemon
                 displayWeather(weatherData, headers);
                 await displayPokemon(weatherData.weather[0].main);
-                
+
                 $('#loading').hide();
                 $('#content').fadeIn();
             } catch (error) {

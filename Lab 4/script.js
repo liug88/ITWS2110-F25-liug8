@@ -1,6 +1,6 @@
 // ==================== API CONFIGURATION ====================
-const WEATHER_API_KEY = 'c07371c77c27c37589415ab178c72cbe'; // Students should add their OpenWeatherMap API key
-const NASA_API_KEY = 'DEMO_KEY'; // NASA provides a demo key, but students can get their own
+const WEATHER_API_KEY = 'c07371c77c27c37589415ab178c72cbe'; // OpenWeatherMap API key
+const NASA_API_KEY = 'DEMO_KEY'; // NASA DEMO_KEY has rate limits - get your own free key at https://api.nasa.gov/
 
 // ==================== DOM ELEMENTS ====================
 const elements = {
@@ -149,13 +149,42 @@ async function loadAllData(location) {
 // ==================== WEATHER DATA ====================
 async function loadWeatherData(location) {
     try {
+        // Validate API key exists
+        if (!WEATHER_API_KEY) {
+            console.warn('Weather API key not set. Using demo data.');
+            useDemoWeatherData(location);
+            return;
+        }
+
         // First, get coordinates from location name using Geocoding API
         const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(location)}&limit=1&appid=${WEATHER_API_KEY}`;
         const geoResponse = await fetch(geoUrl);
+
+        if (!geoResponse.ok) {
+            console.warn(`Geocoding API error: ${geoResponse.status}`);
+            useDemoWeatherData(location);
+            return;
+        }
+
         const geoData = await geoResponse.json();
 
-        if (geoData.length === 0) {
-            throw new Error('Location not found');
+        if (!geoData || geoData.length === 0) {
+            console.warn(`Location "${location}" not found. Using demo data for Troy, NY.`);
+            // Try Troy, NY as fallback
+            const fallbackUrl = `https://api.openweathermap.org/geo/1.0/direct?q=Troy,NY,US&limit=1&appid=${WEATHER_API_KEY}`;
+            const fallbackResponse = await fetch(fallbackUrl);
+            const fallbackData = await fallbackResponse.json();
+
+            if (fallbackData && fallbackData.length > 0) {
+                const { lat, lon, name, state, country } = fallbackData[0];
+                const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=imperial`;
+                const weatherResponse = await fetch(weatherUrl);
+                const weatherData = await weatherResponse.json();
+                displayWeatherData(weatherData, name, state, country, lat, lon);
+            } else {
+                useDemoWeatherData(location);
+            }
+            return;
         }
 
         const { lat, lon, name, state, country } = geoData[0];
@@ -163,18 +192,18 @@ async function loadWeatherData(location) {
         // Then get weather data using coordinates
         const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=imperial`;
         const weatherResponse = await fetch(weatherUrl);
-        const weatherData = await weatherResponse.json();
 
+        if (!weatherResponse.ok) {
+            console.warn(`Weather API error: ${weatherResponse.status}`);
+            useDemoWeatherData(location);
+            return;
+        }
+
+        const weatherData = await weatherResponse.json();
         displayWeatherData(weatherData, name, state, country, lat, lon);
     } catch (error) {
         console.error('Error fetching weather data:', error);
-
-        // Use demo data if API key is not set or there's an error
-        if (!WEATHER_API_KEY) {
-            useDemoWeatherData(location);
-        } else {
-            throw error;
-        }
+        useDemoWeatherData(location);
     }
 }
 
@@ -218,9 +247,26 @@ async function loadNASAData() {
     try {
         const apodUrl = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}`;
         const response = await fetch(apodUrl);
+
+        // Check if the response is OK (status 200-299)
+        if (!response.ok) {
+            console.warn(`NASA API returned status ${response.status}. Using demo data.`);
+            if (response.status === 429) {
+                console.warn('NASA API rate limit exceeded. Get your own free API key at https://api.nasa.gov/');
+            }
+            useDemoNASAData();
+            return;
+        }
+
         const data = await response.json();
 
-        displayNASAData(data);
+        // Validate the data has required fields
+        if (data && data.url && data.title) {
+            displayNASAData(data);
+        } else {
+            console.warn('NASA API returned incomplete data. Using demo data.');
+            useDemoNASAData();
+        }
     } catch (error) {
         console.error('Error fetching NASA data:', error);
         useDemoNASAData();
@@ -228,25 +274,146 @@ async function loadNASAData() {
 }
 
 function displayNASAData(data) {
-    elements.apodImage.src = data.url;
-    elements.apodImage.alt = data.title;
-    elements.apodTitle.textContent = data.title;
-    elements.apodDate.textContent = formatDate(data.date);
-    elements.apodExplanation.textContent = data.explanation;
+    try {
+        // Check if it's a video or image
+        if (data.media_type === 'video') {
+            // Handle video - replace img with iframe
+            const container = elements.apodImage.parentElement;
+            container.innerHTML = `
+                <iframe
+                    src="${data.url}"
+                    class="apod-image"
+                    frameborder="0"
+                    allowfullscreen
+                    style="width: 100%; height: 100%;"
+                ></iframe>
+            `;
+            console.log('📹 Today\'s APOD is a video!');
+        } else {
+            // Handle image normally
+            if (elements.apodImage && elements.apodImage.tagName === 'IMG') {
+                // Add loading indicator
+                elements.apodImage.style.opacity = '0.5';
 
-    if (data.copyright) {
-        elements.apodCopyright.textContent = `© ${data.copyright}`;
-    } else {
-        elements.apodCopyright.textContent = 'Image courtesy of NASA';
+                elements.apodImage.src = data.url || '';
+                elements.apodImage.alt = data.title || 'NASA Image';
+
+                // Add load handler to remove loading state
+                elements.apodImage.onload = function() {
+                    elements.apodImage.style.opacity = '1';
+                    console.log('✅ NASA APOD image loaded successfully');
+                };
+
+                // Add error handler for image loading
+                elements.apodImage.onerror = function() {
+                    console.error('❌ Failed to load NASA image, using demo data');
+                    useDemoNASAData();
+                };
+            } else {
+                // If iframe exists, replace with img
+                const container = document.querySelector('.apod-image-container');
+                container.innerHTML = `<img id="apodImage" src="${data.url}" alt="${data.title}" class="apod-image">`;
+                // Re-cache the element
+                elements.apodImage = document.getElementById('apodImage');
+
+                // Add handlers to the new element
+                elements.apodImage.onload = function() {
+                    elements.apodImage.style.opacity = '1';
+                    console.log('✅ NASA APOD image loaded successfully');
+                };
+                elements.apodImage.onerror = function() {
+                    console.error('❌ Failed to load NASA image, using demo data');
+                    useDemoNASAData();
+                };
+            }
+        }
+
+        elements.apodTitle.textContent = data.title || 'Untitled';
+        elements.apodDate.textContent = data.date ? formatDate(data.date) : formatDate(new Date().toISOString().split('T')[0]);
+        elements.apodExplanation.textContent = data.explanation || 'No description available.';
+
+        if (data.copyright) {
+            elements.apodCopyright.textContent = `© ${data.copyright}`;
+        } else {
+            elements.apodCopyright.textContent = 'Image courtesy of NASA';
+        }
+    } catch (error) {
+        console.error('Error displaying NASA data:', error);
+        useDemoNASAData();
     }
 }
 
 function useDemoNASAData() {
-    elements.apodImage.src = 'https://apod.nasa.gov/apod/image/2310/OrionNebula_Hubble_960.jpg';
-    elements.apodTitle.textContent = 'The Orion Nebula';
-    elements.apodDate.textContent = formatDate(new Date().toISOString().split('T')[0]);
-    elements.apodExplanation.textContent = 'The Orion Nebula is a diffuse nebula situated in the Milky Way, being south of Orion\'s Belt in the constellation of Orion. It is one of the brightest nebulae and is visible to the naked eye in the night sky.';
-    elements.apodCopyright.textContent = 'Image courtesy of NASA/ESA Hubble Space Telescope';
+    // Ensure we have an image element, not iframe
+    const container = document.querySelector('.apod-image-container');
+    if (container && !elements.apodImage) {
+        container.innerHTML = '<img id="apodImage" src="" alt="NASA Image" class="apod-image">';
+        elements.apodImage = document.getElementById('apodImage');
+    }
+
+    // Array of stunning space images from reliable sources
+    const spaceImages = [
+        {
+            url: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1200&q=80',
+            title: 'The Milky Way Galaxy',
+            explanation: 'Our home galaxy, the Milky Way, contains over 200 billion stars and stretches about 100,000 light-years across. This stunning view captures the galactic core rising above Earth\'s horizon.',
+            credit: 'Photo by Jeremy Thomas on Unsplash'
+        },
+        {
+            url: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80',
+            title: 'Nebula in Deep Space',
+            explanation: 'Nebulae are vast clouds of dust and gas in space, often serving as stellar nurseries where new stars are born. These cosmic structures create some of the most beautiful sights in the universe.',
+            credit: 'Photo by Greg Rakozy on Unsplash'
+        },
+        {
+            url: 'https://images.unsplash.com/photo-1464802686167-b939a6910659?w=1200&q=80',
+            title: 'Starfield and Cosmic Dust',
+            explanation: 'This breathtaking view shows countless stars scattered across space, interconnected by streams of cosmic dust and gas. Each point of light represents a distant sun, many with their own planetary systems.',
+            credit: 'Photo by Aldebaran S on Unsplash'
+        },
+        {
+            url: 'https://images.unsplash.com/photo-1610296669228-602fa827fc1f?w=1200&q=80',
+            title: 'The Cosmic Dance',
+            explanation: 'Stars, galaxies, and nebulae create an endless cosmic ballet across the universe. This image captures the raw beauty of deep space, where light from distant objects has traveled for millions of years to reach us.',
+            credit: 'Photo by Guillermo Ferla on Unsplash'
+        },
+        {
+            url: 'https://images.unsplash.com/photo-1608889476561-6242cfdbf622?w=1200&q=80',
+            title: 'Galactic Wonder',
+            explanation: 'The universe is filled with billions of galaxies, each containing hundreds of billions of stars. This spectacular view reminds us of the vast scale and incredible beauty of the cosmos.',
+            credit: 'Photo by Stellrweb on Unsplash'
+        }
+    ];
+
+    // Select a random image or use date-based selection for consistency throughout the day
+    const today = new Date().toISOString().split('T')[0];
+    const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+    const selectedImage = spaceImages[dayOfYear % spaceImages.length];
+
+    if (elements.apodImage && elements.apodImage.tagName === 'IMG') {
+        elements.apodImage.src = selectedImage.url;
+        elements.apodImage.alt = selectedImage.title;
+
+        // Add error handler in case Unsplash is down too
+        elements.apodImage.onerror = function() {
+            console.warn('Primary demo image failed, trying fallback...');
+            // Ultimate fallback - a different Unsplash image
+            elements.apodImage.src = 'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?w=1200&q=80';
+        };
+    } else {
+        container.innerHTML = `<img id="apodImage" src="${selectedImage.url}" alt="${selectedImage.title}" class="apod-image">`;
+        elements.apodImage = document.getElementById('apodImage');
+
+        elements.apodImage.onerror = function() {
+            console.warn('Primary demo image failed, trying fallback...');
+            elements.apodImage.src = 'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?w=1200&q=80';
+        };
+    }
+
+    elements.apodTitle.textContent = selectedImage.title + ' (Demo)';
+    elements.apodDate.textContent = formatDate(today);
+    elements.apodExplanation.textContent = selectedImage.explanation + ' NASA API temporarily unavailable - get your own free API key at https://api.nasa.gov/ for daily astronomy pictures.';
+    elements.apodCopyright.textContent = selectedImage.credit;
 }
 
 // ==================== SPACE FACTS GENERATION ====================
@@ -326,12 +493,29 @@ function hideLoading() {
 }
 
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
+    try {
+        // Handle both Date objects and date strings
+        const date = typeof dateString === 'string' ? new Date(dateString + 'T00:00:00') : new Date(dateString);
+
+        // Check if date is valid
+        if (isNaN(date.getTime())) {
+            throw new Error('Invalid date');
+        }
+
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    } catch (error) {
+        console.error('Date formatting error:', error);
+        // Return today's date as fallback
+        return new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
 }
 
 function updateTimestamp() {

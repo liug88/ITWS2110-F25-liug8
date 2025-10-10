@@ -1,0 +1,623 @@
+/* ==================== RESET & BASE STYLES ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Color Palette - Deep Space Theme */
+    --space-black: #0a0e27;
+    --space-dark: #141852;
+    --space-purple: #1e2875;
+    --space-blue: #2d46b9;
+    --space-cyan: #00d4ff;
+    --space-pink: #ff006e;
+    --space-gold: #ffd60a;
+    --space-white: #f8f9fa;
+
+    /* Gradients */
+    --gradient-cosmic: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-nebula: linear-gradient(135deg, #ff006e 0%, #8338ec 50%, #3a86ff 100%);
+    --gradient-aurora: linear-gradient(135deg, #00d4ff 0%, #9d4edd 50%, #ff006e 100%);
+
+    /* Shadows */
+    --shadow-glow: 0 0 20px rgba(0, 212, 255, 0.3);
+    --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --shadow-card-hover: 0 12px 48px rgba(0, 212, 255, 0.4);
+}
+
+body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    color: var(--space-white);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ==================== ANIMATED STARFIELD BACKGROUND ==================== */
+.stars,
+.stars2,
+.stars3 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.stars {
+    background: transparent url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2"><circle cx="1" cy="1" r="1" fill="white"/></svg>') repeat;
+    background-size: 200px 200px;
+    animation: animateStars 100s linear infinite;
+    opacity: 0.7;
+}
+
+.stars2 {
+    background: transparent url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="3" height="3"><circle cx="1.5" cy="1.5" r="1.5" fill="white"/></svg>') repeat;
+    background-size: 300px 300px;
+    animation: animateStars 150s linear infinite;
+    opacity: 0.5;
+}
+
+.stars3 {
+    background: transparent url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4"><circle cx="2" cy="2" r="2" fill="white"/></svg>') repeat;
+    background-size: 400px 400px;
+    animation: animateStars 200s linear infinite;
+    opacity: 0.3;
+}
+
+@keyframes animateStars {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(-1000px);
+    }
+}
+
+/* ==================== CONTAINER & LAYOUT ==================== */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* ==================== HEADER ==================== */
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: fadeInDown 1s ease-out;
+}
+
+.title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    background: var(--gradient-aurora);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+    letter-spacing: 2px;
+    text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+    animation: glow 3s ease-in-out infinite alternate;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: var(--space-cyan);
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+.icon {
+    display: inline-block;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes glow {
+    from {
+        filter: drop-shadow(0 0 5px rgba(0, 212, 255, 0.5));
+    }
+    to {
+        filter: drop-shadow(0 0 20px rgba(157, 78, 221, 0.8));
+    }
+}
+
+/* ==================== LOADING SCREEN ==================== */
+.loading-screen {
+    text-align: center;
+    padding: 4rem 2rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.loading-spinner {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 2rem;
+}
+
+.planet {
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-nebula);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 40px rgba(255, 0, 110, 0.6);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.orbit {
+    width: 150px;
+    height: 150px;
+    border: 3px solid transparent;
+    border-top-color: var(--space-cyan);
+    border-right-color: var(--space-pink);
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-text {
+    font-size: 1.3rem;
+    color: var(--space-cyan);
+    animation: pulse-text 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-text {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ==================== CONTENT VISIBILITY ==================== */
+.content.hidden {
+    display: none;
+}
+
+/* ==================== LOCATION INPUT SECTION ==================== */
+.location-section {
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.input-group {
+    display: flex;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.location-input {
+    flex: 1;
+    min-width: 250px;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-family: 'Space Grotesk', sans-serif;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--space-cyan);
+    border-radius: 50px;
+    color: var(--space-white);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.location-input:focus {
+    outline: none;
+    border-color: var(--space-pink);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.location-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.search-btn {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    background: var(--gradient-aurora);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+}
+
+.search-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0, 212, 255, 0.5);
+}
+
+.search-btn:active {
+    transform: translateY(0);
+}
+
+/* ==================== WEATHER SECTION ==================== */
+.weather-section {
+    margin-bottom: 3rem;
+    animation: fadeInUp 1s ease-out;
+}
+
+.location-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+#locationName {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--space-cyan);
+    margin-bottom: 0.5rem;
+}
+
+.coordinates {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Orbitron', monospace;
+}
+
+.weather-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+/* ==================== WEATHER CARDS ==================== */
+.weather-card,
+.detail-card,
+.apod-card,
+.facts-grid > div,
+.comparison-grid > div {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: var(--shadow-card);
+    transition: all 0.3s ease;
+}
+
+.weather-card:hover,
+.detail-card:hover,
+.apod-card:hover,
+.facts-grid > div:hover,
+.comparison-grid > div:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: var(--space-cyan);
+}
+
+.main-weather {
+    text-align: center;
+    background: var(--gradient-cosmic);
+    background-size: 200% 200%;
+    animation: gradientShift 5s ease infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.weather-icon-large {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.temperature {
+    font-size: 4rem;
+    font-weight: 900;
+    font-family: 'Orbitron', sans-serif;
+    color: var(--space-white);
+    margin-bottom: 0.5rem;
+}
+
+.condition {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--space-cyan);
+    margin-bottom: 0.5rem;
+}
+
+.feels-like {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ==================== WEATHER DETAILS ==================== */
+.weather-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+}
+
+.detail-card {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.detail-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.detail-label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.detail-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--space-cyan);
+    font-family: 'Orbitron', monospace;
+}
+
+/* ==================== SECTIONS ==================== */
+.astronomy-section,
+.facts-section,
+.comparison-section {
+    margin-bottom: 3rem;
+    animation: fadeInUp 1.2s ease-out;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-family: 'Orbitron', sans-serif;
+    background: var(--gradient-aurora);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ==================== ASTRONOMY PICTURE ==================== */
+.apod-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.apod-image-container {
+    width: 100%;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.apod-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.apod-image:hover {
+    transform: scale(1.05);
+}
+
+.apod-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--space-cyan);
+    margin-bottom: 0.5rem;
+}
+
+.apod-date {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 1rem;
+    font-family: 'Orbitron', monospace;
+}
+
+.apod-explanation {
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1rem;
+}
+
+.apod-copyright {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+/* ==================== FACTS & COMPARISON GRIDS ==================== */
+.facts-grid,
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.facts-grid > div,
+.comparison-grid > div {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.fact-icon,
+.comparison-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.fact-title,
+.comparison-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--space-cyan);
+    margin-bottom: 0.5rem;
+}
+
+.fact-text,
+.comparison-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ==================== FOOTER ==================== */
+.footer {
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 3rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+}
+
+.timestamp {
+    margin-top: 0.5rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .weather-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .weather-details {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .input-group {
+        flex-direction: column;
+    }
+
+    .location-input,
+    .search-btn {
+        width: 100%;
+    }
+
+    .facts-grid,
+    .comparison-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 769px) {
+    .apod-card {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* ==================== UTILITY CLASSES ==================== */
+.hidden {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }

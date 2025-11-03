@@ -153,3 +153,55 @@ class Division extends Operation {
 </body>
 </html>
 
+<?php
+/*
+ * Question Answers
+ *
+ * Question 1: Explain what each of your classes and methods does, the order in which
+ * methods are invoked, and the flow of execution after one of the operation buttons
+ * has been clicked.
+ *
+ * Classes and Methods:
+ * - Operation (abstract class): Defines the structure for all mathematical operations.
+ *   Contains two protected properties ($operand_1, $operand_2) and a constructor that
+ *   validates numeric input. It declares two abstract methods: operate() and getEquation()
+ *   that must be implemented by all subclasses.
+ *
+ * - Addition, Subtraction, Multiplication, Division (subclasses): Each extends Operation
+ *   and implements the two abstract methods:
+ *   - operate(): Performs the actual mathematical operation (+, -, *, /)
+ *   - getEquation(): Returns a formatted string showing the equation and result
+ *
+ * Flow of Execution after button click:
+ * 1. User enters two numbers and clicks an operation button (e.g., "Add")
+ * 2. Form is submitted via POST to lab6start.php
+ * 3. PHP checks if REQUEST_METHOD is POST (line 83)
+ * 4. If POST, extracts $o1 and $o2 from $_POST array (lines 84-85)
+ * 5. In the try block (line 98), checks which button was pressed using isset()
+ * 6. Based on button pressed, instantiates appropriate operation object (e.g., new Addition($o1, $o2))
+ * 7. Constructor validates that operands are numeric, throws exception if not (lines 8-10)
+ * 8. If valid, stores operands in object properties (lines 13-14)
+ * 9. In the HTML section (line 123), checks if $op is set
+ * 10. Calls $op->getEquation() which internally calls operate() to compute result
+ * 11. getEquation() returns formatted string showing the equation
+ * 12. Result is displayed in the <pre> tag
+ * 13. Any exceptions caught are added to $err array and displayed
+ *
+ *
+ * Question 2: Explain how the application would differ if you were to use $_GET,
+ * and why this may or may not be preferable.
+ *
+ * ANSWER:
+ * If we used $_GET instead of $_POST, all of the data would be sent in the URL query string, all form values would be visible in the browser's address bar, 
+ * and the URL could be bookmarked or shared with the calculation pre-filled. 
+ * 
+ * For this specific lab, we'd prefer to stay with post because we don't need the calculation to be bookmarkable or shareable, and we want to avoid exposing the operands in the URL.
+ * We also want to prevent issues with URL length limits and avoid accidental resubmission from URL sharing/bookmarking.
+ *
+ * Question 3: Please explain whether or not there might be another (better +/-) way
+ * to determine which button has been pressed and take the appropriate action.
+ *
+ * Yes, there's a much simpler approach, which is a just to create an associative array that maps the button names to the class names. If we use this method,
+ * we don't need to use multiple if/elseif statements. 
+ */
+?>

@@ -1,0 +1,209 @@
+LAB 8 - SQL & PHP - COMMAND OUTPUT
+==================================
+
+========================================
+PART 1: Create Database and Initial Tables
+========================================
+
+Command: CREATE DATABASE IF NOT EXISTS websyslab8;
+Output: Query OK, 1 row affected (0.01 sec)
+
+Command: USE websyslab8;
+Output: Database changed
+
+Command: CREATE TABLE IF NOT EXISTS courses (
+    crn INT(11) PRIMARY KEY,
+    prefix VARCHAR(4) NOT NULL,
+    number SMALLINT(4) NOT NULL,
+    title VARCHAR(255) NOT NULL
+) COLLATE utf8_unicode_ci;
+Output: Query OK, 0 rows affected (0.03 sec)
+
+Command: CREATE TABLE IF NOT EXISTS students (
+    rin INT(9) PRIMARY KEY,
+    rcsID CHAR(7),
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    alias VARCHAR(100) NOT NULL,
+    phone INT(10)
+) COLLATE utf8_unicode_ci;
+Output: Query OK, 0 rows affected (0.03 sec)
+
+========================================
+PART 2: Modify Tables and Insert Data
+========================================
+
+Question 1: Add address fields to students table
+-------------------------------------------------
+Command: ALTER TABLE students
+ADD COLUMN street VARCHAR(255),
+ADD COLUMN city VARCHAR(100),
+ADD COLUMN state CHAR(2),
+ADD COLUMN zip VARCHAR(10);
+Output: Query OK, 0 rows affected (0.05 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+Question 2: Add section and year fields to courses table
+---------------------------------------------------------
+Command: ALTER TABLE courses
+ADD COLUMN section VARCHAR(10),
+ADD COLUMN year YEAR;
+Output: Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+Question 3: CREATE grades table
+--------------------------------
+Command: CREATE TABLE IF NOT EXISTS grades (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    crn INT(11),
+    rin INT(9),
+    grade INT(3) NOT NULL,
+    FOREIGN KEY (crn) REFERENCES courses(crn),
+    FOREIGN KEY (rin) REFERENCES students(rin)
+);
+Output: Query OK, 0 rows affected (0.04 sec)
+
+Question 4: INSERT at least 4 courses
+--------------------------------------
+Command: INSERT INTO courses (crn, prefix, number, title, section, year) VALUES
+(12345, 'ITWS', 2110, 'Introduction to Web Science', '01', 2025),
+(12346, 'CSCI', 1100, 'Computer Science I', '02', 2025),
+(12347, 'MATH', 1010, 'Calculus I', '03', 2025),
+(12348, 'ENGR', 1600, 'Introduction to Engineering', '01', 2025);
+Output: Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+Question 5: INSERT at least 4 students
+---------------------------------------
+Command: INSERT INTO students (rin, rcsID, first_name, last_name, alias, phone, street, city, state, zip) VALUES
+(661234567, 'smithj', 'John', 'Smith', 'Johnny', 5181234567, '123 Main St', 'Troy', 'NY', '12180'),
+(661234568, 'doej', 'Jane', 'Doe', 'JD', 5181234568, '456 Oak Ave', 'Albany', 'NY', '12201'),
+(661234569, 'brownm', 'Michael', 'Brown', 'Mike', 5181234569, '789 Pine Rd', 'Troy', 'NY', '12180'),
+(661234570, 'johnsa', 'Alice', 'Johnson', 'Ally', 5181234570, '321 Elm St', 'Schenectady', 'NY', '12305');
+Output: Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+Question 6: ADD 10 grades into the grades table
+------------------------------------------------
+Command: INSERT INTO grades (crn, rin, grade) VALUES
+(12345, 661234567, 95),
+(12345, 661234568, 88),
+(12345, 661234569, 92),
+(12346, 661234567, 85),
+(12346, 661234568, 91),
+(12346, 661234570, 78),
+(12347, 661234569, 96),
+(12347, 661234570, 82),
+(12348, 661234567, 89),
+(12348, 661234568, 94);
+Output: Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+Question 7: List all students in alphabetical order by rin, last name, RCSid, and firstname
+--------------------------------------------------------------------------------------------
+
+7a) ORDER BY RIN:
+Command: SELECT * FROM students ORDER BY rin;
+Output:
++-----------+--------+------------+-----------+--------+------------+---------------+--------------+-------+-------+
+| rin       | rcsID  | first_name | last_name | alias  | phone      | street        | city         | state | zip   |
++-----------+--------+------------+-----------+--------+------------+---------------+--------------+-------+-------+
+| 661234567 | smithj | John       | Smith     | Johnny | 2147483647 | 123 Main St   | Troy         | NY    | 12180 |
+| 661234568 | doej   | Jane       | Doe       | JD     | 2147483647 | 456 Oak Ave   | Albany       | NY    | 12201 |
+| 661234569 | brownm | Michael    | Brown     | Mike   | 2147483647 | 789 Pine Rd   | Troy         | NY    | 12180 |
+| 661234570 | johnsa | Alice      | Johnson   | Ally   | 2147483647 | 321 Elm St    | Schenectady  | NY    | 12305 |
++-----------+--------+------------+-----------+--------+------------+---------------+--------------+-------+-------+
+4 rows in set (0.00 sec)
+
+7b) ORDER BY LAST NAME:
+Command: SELECT * FROM students ORDER BY last_name;
+Output:
++-----------+--------+------------+-----------+--------+------------+---------------+--------------+-------+-------+
+| rin       | rcsID  | first_name | last_name | alias  | phone      | street        | city         | state | zip   |
++-----------+--------+------------+-----------+--------+------------+---------------+--------------+-------+-------+
+| 661234569 | brownm | Michael    | Brown     | Mike   | 2147483647 | 789 Pine Rd   | Troy         | NY    | 12180 |
+| 661234568 | doej   | Jane       | Doe       | JD     | 2147483647 | 456 Oak Ave   | Albany       | NY    | 12201 |
+| 661234570 | johnsa | Alice      | Johnson   | Ally   | 2147483647 | 321 Elm St    | Schenectady  | NY    | 12305 |
+| 661234567 | smithj | John       | Smith     | Johnny | 2147483647 | 123 Main St   | Troy         | NY    | 12180 |
++-----------+--------+------------+-----------+--------+------------+---------------+--------------+-------+-------+
+4 rows in set (0.00 sec)
+
+7c) ORDER BY RCSID:
+Command: SELECT * FROM students ORDER BY rcsID;
+Output:
++-----------+--------+------------+-----------+--------+------------+---------------+--------------+-------+-------+
+| rin       | rcsID  | first_name | last_name | alias  | phone      | street        | city         | state | zip   |
++-----------+--------+------------+-----------+--------+------------+---------------+--------------+-------+-------+
+| 661234569 | brownm | Michael    | Brown     | Mike   | 2147483647 | 789 Pine Rd   | Troy         | NY    | 12180 |
+| 661234568 | doej   | Jane       | Doe       | JD     | 2147483647 | 456 Oak Ave   | Albany       | NY    | 12201 |
+| 661234570 | johnsa | Alice      | Johnson   | Ally   | 2147483647 | 321 Elm St    | Schenectady  | NY    | 12305 |
+| 661234567 | smithj | John       | Smith     | Johnny | 2147483647 | 123 Main St   | Troy         | NY    | 12180 |
++-----------+--------+------------+-----------+--------+------------+---------------+--------------+-------+-------+
+4 rows in set (0.00 sec)
+
+7d) ORDER BY FIRST NAME:
+Command: SELECT * FROM students ORDER BY first_name;
+Output:
++-----------+--------+------------+-----------+--------+------------+---------------+--------------+-------+-------+
+| rin       | rcsID  | first_name | last_name | alias  | phone      | street        | city         | state | zip   |
++-----------+--------+------------+-----------+--------+------------+---------------+--------------+-------+-------+
+| 661234570 | johnsa | Alice      | Johnson   | Ally   | 2147483647 | 321 Elm St    | Schenectady  | NY    | 12305 |
+| 661234568 | doej   | Jane       | Doe       | JD     | 2147483647 | 456 Oak Ave   | Albany       | NY    | 12201 |
+| 661234567 | smithj | John       | Smith     | Johnny | 2147483647 | 123 Main St   | Troy         | NY    | 12180 |
+| 661234569 | brownm | Michael    | Brown     | Mike   | 2147483647 | 789 Pine Rd   | Troy         | NY    | 12180 |
++-----------+--------+------------+-----------+--------+------------+---------------+--------------+-------+-------+
+4 rows in set (0.00 sec)
+
+Question 8: List all students rin, name and address if their grade in any course was higher than 90
+----------------------------------------------------------------------------------------------------
+Command: SELECT DISTINCT s.rin, s.first_name, s.last_name, s.street, s.city, s.state, s.zip
+FROM students s
+JOIN grades g ON s.rin = g.rin
+WHERE g.grade > 90;
+Output:
++-----------+------------+-----------+-------------+--------------+-------+-------+
+| rin       | first_name | last_name | street      | city         | state | zip   |
++-----------+------------+-----------+-------------+--------------+-------+-------+
+| 661234567 | John       | Smith     | 123 Main St | Troy         | NY    | 12180 |
+| 661234568 | Jane       | Doe       | 456 Oak Ave | Albany       | NY    | 12201 |
+| 661234569 | Michael    | Brown     | 789 Pine Rd | Troy         | NY    | 12180 |
++-----------+------------+-----------+-------------+--------------+-------+-------+
+3 rows in set (0.00 sec)
+
+Question 9: List out the average grade in each course
+------------------------------------------------------
+Command: SELECT c.crn, c.prefix, c.number, c.title, AVG(g.grade) AS average_grade
+FROM courses c
+JOIN grades g ON c.crn = g.crn
+GROUP BY c.crn, c.prefix, c.number, c.title;
+Output:
++-------+--------+--------+--------------------------------+---------------+
+| crn   | prefix | number | title                          | average_grade |
++-------+--------+--------+--------------------------------+---------------+
+| 12345 | ITWS   |   2110 | Introduction to Web Science    |       91.6667 |
+| 12346 | CSCI   |   1100 | Computer Science I             |       84.6667 |
+| 12347 | MATH   |   1010 | Calculus I                     |       89.0000 |
+| 12348 | ENGR   |   1600 | Introduction to Engineering    |       91.5000 |
++-------+--------+--------+--------------------------------+---------------+
+4 rows in set (0.00 sec)
+
+Question 10: List out the number of students in each course
+------------------------------------------------------------
+Command: SELECT c.crn, c.prefix, c.number, c.title, COUNT(DISTINCT g.rin) AS student_count
+FROM courses c
+JOIN grades g ON c.crn = g.crn
+GROUP BY c.crn, c.prefix, c.number, c.title;
+Output:
++-------+--------+--------+--------------------------------+---------------+
+| crn   | prefix | number | title                          | student_count |
++-------+--------+--------+--------------------------------+---------------+
+| 12345 | ITWS   |   2110 | Introduction to Web Science    |             3 |
+| 12346 | CSCI   |   1100 | Computer Science I             |             3 |
+| 12347 | MATH   |   1010 | Calculus I                     |             2 |
+| 12348 | ENGR   |   1600 | Introduction to Engineering    |             2 |
++-------+--------+--------+--------------------------------+---------------+
+4 rows in set (0.00 sec)
+
+========================================
+END OF OUTPUT
+========================================
